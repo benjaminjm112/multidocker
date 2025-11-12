@@ -1,14 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import axios from 'axios';
 
-// original example commented out
-// test('renders learn react link', () => {
-//   render(<App />);
-//   const linkElement = screen.getByText(/learn react/i);
-//   expect(linkElement).toBeInTheDocument();
-// });
+jest.mock('axios');
 
 test('renders without crashing', () => {
+  axios.get.mockResolvedValue({ data: [] });
   render(<App />);
   expect(screen).toBeDefined();
 });
