@@ -89,6 +89,7 @@ jobs:
           existing_bucket_name: elasticbeanstalk-us-east-1-841162669835 
           deployment_package: deploy.zip
           wait_for_deployment: false
+          use_existing_version_if_available: true
 
       
 
