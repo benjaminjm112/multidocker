@@ -1,7 +1,7 @@
 {
     "AWSEBDockerrunVersion": 2,
-    "Authentication": {
-        "bucket": "eb-docker-creds1 ",
+    "authentication": {
+        "bucket": "eb-docker-creds1",
         "key": "dockercfg"
         },
     "containerDefinitions": [
@@ -16,7 +16,7 @@
             "name": "server",
             "image": "benjaminjm112/multi-server",
             "hostname": "api",
-            "essential": "false",
+            "essential": false,
             "memory": 128
         },
         {
@@ -24,14 +24,14 @@
             "name": "worker",
             "image": "benjaminjm112/multi-worker",
             "hostname": "worker",
-            "essential": "false",
+            "essential": false,
             "memory": 128
         },
         {
           
             "name": "nginx",
-            "image": "benjaminjm112/multi-ngnix",
-            "essential": "true",
+            "image": "benjaminjm112/multi-nginx",
+            "essential": true,
             
             "portMappings": [
                 {
