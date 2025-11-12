@@ -58,3 +58,31 @@ jobs:
           echo "Building worker..."
           docker build -t benjaminjm112/multi-worker ./worker
           docker push benjaminjm112/multi-worker
+
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          audience: sts.amazonaws.com
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::841162669835:role/GithHUB_OIDC
+
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Generate deployment package
+        run: zip deploy.zip Dockerrun.aws.json
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          application_name: multi-docker
+          environment_name: Multi-docker-env
+          region: us-east-1
+          deployment_package: deploy.zip
+
+      
+
+      
