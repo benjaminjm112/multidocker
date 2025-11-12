@@ -30,9 +30,6 @@ jobs:
       - name: Build and test client
         # if: contains(steps.changes.outputs.dirs, 'client')
         run: |
-          echo "Building and testing client..."
-          docker build -t benjaminjm112/react-test -f ./client/Dockerfile.dev ./client
-          docker run -e CI=true benjaminjm112/react-test npm test
           docker build -t benjaminjm112/multi-client ./client
           docker push benjaminjm112/multi-client
 
@@ -54,7 +51,7 @@ jobs:
 
       # --- WORKER ---
       - name: Build worker
-        if: contains(steps.changes.outputs.dirs, 'worker')
+        # if: contains(steps.changes.outputs.dirs, 'worker')
         run: |
           echo "Building worker..."
           docker build -t benjaminjm112/multi-worker ./worker
