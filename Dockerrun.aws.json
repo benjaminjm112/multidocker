@@ -1,4 +1,37 @@
 {
-  "AWSEBDockerrunVersion": 3,
-  "DockerComposeFile": "docker-compose.yml"
+    "AWSEBDockerrunVersion": 2,
+    "containerDefinitions": [
+        {
+            "name": "client",
+            "image": "benjaminjm112/multi-client",
+            "hostname": "client",
+            "essential": false
+        },
+        {
+            "name": "server",
+            "image": "benjaminjm112/multi-server",
+            "hostname": "api",
+            "essential": "false"
+        },
+        {
+
+            "name": "worker",
+            "image": "benjaminjm112/multi-worker",
+            "hostname": "worker",
+            "essential": "false"
+        },
+        {
+          
+            "name": "nginx",
+            "image": "benjaminjm112/multi-ngnix",
+            "essential": "true",
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "containerPort": 80
+                }
+            ],
+            "links": ["client", "server"]  
+        }
+    ]
 }
