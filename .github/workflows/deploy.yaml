@@ -1,24 +1,60 @@
 name: Deploy MultiDocker
+
 on:
   push:
     branches:
-      - main # check your repo, your default branch might be master!
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # Log in to Docker Hub
       - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t benjaminjm112/react-test -f ./client/Dockerfile.dev ./client
-      - run: docker run -e CI=true benjaminjm112/react-test npm test
 
-      - run: docker build -t benjaminjm112/multi-client ./client
-      - run: docker build -t benjaminjm112/multi-nginx ./nginx
-      - run: docker build -t benjaminjm112/multi-server ./server
-      - run: docker build -t benjaminjm112/multi-worker ./worker
+      # Detect which directories have changed
+      - name: Detect changed files
+        id: changes
+        run: |
+          echo "Checking changed directories..."
+          git fetch origin main
+          # Compare with the previous commit on main
+          CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | cut -d/ -f1 | sort -u)
+          echo "Changed directories: $CHANGED_DIRS"
+          echo "dirs=$CHANGED_DIRS" >> $GITHUB_OUTPUT
 
-      - run: docker push benjaminjm112/multi-client
-      - run: docker push benjaminjm112/multi-nginx
-      - run: docker push benjaminjm112/multi-server
-      - run: docker push benjaminjm112/multi-worker
+      # --- CLIENT ---
+      - name: Build and test client
+        if: contains(steps.changes.outputs.dirs, 'client')
+        run: |
+          echo "Building and testing client..."
+          docker build -t benjaminjm112/react-test -f ./client/Dockerfile.dev ./client
+          docker run -e CI=true benjaminjm112/react-test npm test
+          docker build -t benjaminjm112/multi-client ./client
+          docker push benjaminjm112/multi-client
+
+      # --- NGINX ---
+      - name: Build nginx
+        if: contains(steps.changes.outputs.dirs, 'nginx')
+        run: |
+          echo "Building nginx..."
+          docker build -t benjaminjm112/multi-nginx ./nginx
+          docker push benjaminjm112/multi-nginx
+
+      # --- SERVER ---
+      - name: Build server
+        if: contains(steps.changes.outputs.dirs, 'server')
+        run: |
+          echo "Building server..."
+          docker build -t benjaminjm112/multi-server ./server
+          docker push benjaminjm112/multi-server
+
+      # --- WORKER ---
+      - name: Build worker
+        if: contains(steps.changes.outputs.dirs, 'worker')
+        run: |
+          echo "Building worker..."
+          docker build -t benjaminjm112/multi-worker ./worker
+          docker push benjaminjm112/multi-worker
