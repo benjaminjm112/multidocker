@@ -30,6 +30,9 @@ jobs:
       - name: Build and test client
         # if: contains(steps.changes.outputs.dirs, 'client')
         run: |
+          echo "Building and testing client..."
+          docker build -t benjaminjm112/react-test -f ./client/Dockerfile.dev ./client
+          docker run -e CI=true benjaminjm112/react-test npm test
           docker build -t benjaminjm112/multi-client ./client
           docker push benjaminjm112/multi-client
 
